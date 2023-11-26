@@ -48,9 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onDaySelected: OnDaySelected, // 날짜가 선택됐을 때 실행할 함수
             ),
             const SizedBox(height: 8.0),
-            TodayBanner(
-              selectedDate: selectedDate,
-              count: 0,
+            StreamBuilder(
+              stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
+              builder: (context, snapshot) {
+                return TodayBanner(
+                  selectedDate: selectedDate,
+                  count: snapshot.data?.length ?? 0,
+                );
+              },
             ),
             const SizedBox(height: 8.0),
             Expanded(
@@ -64,14 +69,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final schedule = snapshot.data![index];
-
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: 8.0, left: 8.0, right: 8.0),
-                        child: ScheduleCard(
-                          startTime: schedule.startTime,
-                          endTime: schedule.endTime,
-                          content: schedule.content,
+                      return Dismissible(
+                        key: ObjectKey(schedule.id),
+                        direction: DismissDirection.startToEnd,
+                        onDismissed: (DismissDirection direction) {
+                          GetIt.I<LocalDatabase>().removeSchedule(schedule.id);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 8.0, left: 8.0, right: 8.0),
+                          child: ScheduleCard(
+                            startTime: schedule.startTime,
+                            endTime: schedule.endTime,
+                            content: schedule.content,
+                          ),
                         ),
                       );
                     },
@@ -79,11 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-            const ScheduleCard(
-              startTime: 12,
-              endTime: 14,
-              content: '플러터 공부',
-            )
           ],
         ),
       ),

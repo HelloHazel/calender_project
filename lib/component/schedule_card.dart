@@ -80,7 +80,7 @@ class _Time extends StatelessWidget {
   }
 }
 
-class _Content extends StatelessWidget {
+class _Content extends StatefulWidget {
   final String content;
 
   const _Content({
@@ -88,9 +88,35 @@ class _Content extends StatelessWidget {
   });
 
   @override
+  _ContentState createState() => _ContentState();
+}
+
+class _ContentState extends State<_Content> {
+  bool isCompleted = false;
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Text(content),
+      child: Row(
+        children: [
+          Checkbox(
+            value: isCompleted,
+            onChanged: (bool? value) {
+              setState(() {
+                isCompleted = value ?? false;
+              });
+            },
+          ),
+          Text(
+            widget.content,
+            style: TextStyle(
+              decoration: isCompleted
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
