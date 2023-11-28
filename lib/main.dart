@@ -1,29 +1,30 @@
-import 'package:calender_project/database/drift_database.dart';
+import 'package:calender_project/provider/schedule_provider.dart';
 import 'package:calender_project/screen/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:calender_project/database/drift_database.dart';
+import 'package:get_it/get_it.dart';
+import 'package:calender_project/repository/schedule_repository.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  initializeDateFormatting();
+  await initializeDateFormatting();
 
-  final database = LocalDatabase();
+  final database = LocalDatabase(); // ➊ 데이터베이스 생성
 
-  GetIt.I.registerSingleton<LocalDatabase>(database);
+  final repository = ScheduleRepository();
+  final scheduleProvider = ScheduleProvider(repository: repository);
 
-  runApp(const MyApp());
-}
+  GetIt.I.registerSingleton<LocalDatabase>(database); // ➋ GetIt에
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
-    );
-  }
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => scheduleProvider,
+      child: MaterialApp(
+        home: HomeScreen(),
+      ),
+    ),
+  );
 }

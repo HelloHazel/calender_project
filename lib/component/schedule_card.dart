@@ -99,14 +99,14 @@ class _ContentState extends State<_Content> {
     return Expanded(
       child: Row(
         children: [
-          Checkbox(
-            value: isCompleted,
-            onChanged: (bool? value) {
-              setState(() {
-                isCompleted = value ?? false;
-              });
-            },
-          ),
+          // Checkbox(
+          //   value: isCompleted,
+          //   onChanged: (bool? value) {
+          //     setState(() {
+          //       isCompleted = value ?? false;
+          //     });
+          //   },
+          // ),
           Text(
             widget.content,
             style: TextStyle(
